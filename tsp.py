@@ -12,6 +12,12 @@ class TSP:
         if isinstance(other, TSP):
             return self.x == other.x and self.y == other.y
         return False
+    
+class AlgorithmResult:
+    def __init__(self, time, distance, combination) -> None:
+        self.time = time
+        self.distance = distance
+        self.combination = combination
 
 
 #Algorithms to use
@@ -22,13 +28,16 @@ class TSP:
 
 def bruteForce(listOfPoints):
     start_time = time.time()
+    bestCombination = {}
     bestDistance = 0
     per = list(permutations(listOfPoints))
     for possibleSolution in per: 
         distance = calculateDistanceForListOfPoints(possibleSolution)
         if (bestDistance == 0 or distance < bestDistance) :
             bestDistance = distance
-    return time.time() - start_time, 's'
+            bestCombination = possibleSolution
+    bestTime = f"{time.time() - start_time}s"
+    return AlgorithmResult(bestTime, bestDistance, printListOfPoints(bestCombination)) 
 
 def closestEdge():
     return
@@ -66,7 +75,7 @@ def calculateDistanceForListOfPoints(listOfPoints):
 def printListOfPoints(listOfPoints):
     stringOfCombination = ""
     for point in listOfPoints: 
-        stringOfCombination += f"( {point.x}, {point.y}) "
+        stringOfCombination += f"({point.x}, {point.y}) "
     return stringOfCombination
 
 def runSimulation():
@@ -74,8 +83,8 @@ def runSimulation():
     numberOfCities = 3 
     while numberOfCities != 10: 
         pointList = generatePoints(numberOfCities,10)
-        timeInSeconds = bruteForce(pointList)
-        print(f"It took {timeInSeconds} for {numberOfCities} points.\n")
+        solution = bruteForce(pointList)
+        print(f"It took {solution.time} for {numberOfCities} points. Distance: {solution.distance} Solution: {solution.combination}\n")
         numberOfCities = numberOfCities + 1
     #we'll run all 4 algorithms
     #collect their data
