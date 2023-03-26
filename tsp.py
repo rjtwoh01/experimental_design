@@ -18,7 +18,7 @@ class TSP:
 # 3. DFA
 # 4. BFA
 
-def bruteForce():
+def bruteForce(listOfPoints):
     return
 
 def closestEdge():
@@ -40,6 +40,13 @@ def generatePoints(numberOfPoints, maxCoordinateValue):
             pointList.append(TSP(x,y))
 
     return pointList
+
+def calculateDistance(firstCity, secondCity):
+    xDistance = firstCity.x - secondCity.x
+    yDistance = firstCity.y - secondCity.y
+    distance = abs(xDistance) + abs(yDistance)
+    return distance
+
 
 def runSimulation():
     pointList = generatePoints(10,10)
