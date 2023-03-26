@@ -1,5 +1,6 @@
 import random
 from itertools import permutations
+import time
 #import matplotlib.pyplot as plt
 #import numpy as np
 
@@ -20,19 +21,14 @@ class TSP:
 # 4. BFA
 
 def bruteForce(listOfPoints):
+    start_time = time.time()
     bestDistance = 0
-    bestCombination = {}
     per = list(permutations(listOfPoints))
     for possibleSolution in per: 
         distance = calculateDistanceForListOfPoints(possibleSolution)
         if (bestDistance == 0 or distance < bestDistance) :
             bestDistance = distance
-            bestCombination = possibleSolution
-            print(bestDistance)
-            print("\n ")
-            print(printListOfPoints(bestCombination))
-            print("\n ")
-    return
+    return time.time() - start_time, 's'
 
 def closestEdge():
     return
@@ -74,9 +70,13 @@ def printListOfPoints(listOfPoints):
     return stringOfCombination
 
 def runSimulation():
-    pointList = generatePoints(5,10)
-    
-    bruteForce(pointList)
+
+    numberOfCities = 3 
+    while numberOfCities != 10: 
+        pointList = generatePoints(numberOfCities,10)
+        timeInSeconds = bruteForce(pointList)
+        print(f"It took {timeInSeconds} for {numberOfCities} points.\n")
+        numberOfCities = numberOfCities + 1
     #we'll run all 4 algorithms
     #collect their data
     #run analysis
