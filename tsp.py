@@ -12,6 +12,8 @@ class TSP:
         if isinstance(other, TSP):
             return self.x == other.x and self.y == other.y
         return False
+    def __hash__(self):
+        return hash(str(self))
 
 class TSPEdge:
     def __init__(self, p1, p2):
@@ -24,7 +26,6 @@ class TSPEdge:
         distance2 = calculateDistanceBetweenPoints(self.p2, point)
 
         return (distance1 + distance2 - self.length)
-
     
 class AlgorithmResult:
     def __init__(self, time, distance, combination) -> None:
@@ -36,7 +37,7 @@ class AlgorithmResult:
 #Algorithms to use
 # 1. Brute Force (up to n=10 due to computer speed)
 # 2. Closest Edge
-# 3. DFA
+# 3. dfs
 # 4. BFA
 
 def bruteForce(listOfPoints):
@@ -90,10 +91,48 @@ def closestEdge(listOfPoints):
     finalTime = f"{endtime - startTime}s"
     return AlgorithmResult(finalTime, distance, printListOfPoints(finalList))
 
-def dfa():
-    return
+def dfs(listOfPoints):
+    startTime = time.time()
+    graph = tspGraph(listOfPoints)
+    visited = list()
+    dfsTraversal(visited, graph, listOfPoints[0])
+    endTime = time.time()
+    finalTime = f"{endTime - startTime}s"
 
-def bfa():
+    distance = 0
+    for i, point in enumerate(visited):
+        if (i+1) in range(0, len(visited)):
+            distance += calculateDistanceBetweenPoints(point, visited[i+1])
+
+    return AlgorithmResult(finalTime, distance, printListOfPoints(visited))
+
+def dfsTraversal(visited, graph, node):
+    if node not in visited:
+        visited.append(node)
+        # print(type(node))
+        # print(f"({node.x}, {node.y}) ")
+        if node in graph:
+            for neighbour in graph[node]:
+                dfsTraversal(visited, graph, neighbour)
+
+#requires at least n = 3 points
+def tspGraph(listOfPoints):
+    graph = {
+        listOfPoints[0]: [listOfPoints[1], listOfPoints[2]],
+    }
+
+    for i, point in enumerate(listOfPoints):
+        if i != 0 and (i + 3) in range(0, len(listOfPoints)):
+            graph[listOfPoints[i]] = [listOfPoints[i+2], listOfPoints[i+3]]
+
+    # for x in graph:
+    #     print('parent: ' +  f"({x.x}, {x.y}) ")
+    #     for y in graph[x]:
+    #         print(f"({y.x}, {y.y}) ")
+
+    return graph
+
+def bfs():
     return
 
 def generatePoints(numberOfPoints, maxCoordinateValue):
@@ -133,7 +172,7 @@ def runSimulation():
     #but this is fine for verification
 
     numberOfCities = 3 
-    while numberOfCities != 11: 
+    while numberOfCities != 10: 
         pointList = generatePoints(numberOfCities,10)
         solution = bruteForce(pointList)
         print(f"It took {solution.time} for {numberOfCities} points. Distance: {solution.distance} Solution: {solution.combination}\n")
@@ -146,6 +185,13 @@ def runSimulation():
     while numberOfCities != 20: 
         pointList = generatePoints(numberOfCities,10)
         solution = closestEdge(pointList)
+        print(f"It took {solution.time} for {numberOfCities} points. Distance: {solution.distance} Solution: {solution.combination}\n")
+        numberOfCities = numberOfCities + 1
+
+    numberOfCities = 3
+    while numberOfCities != 20: 
+        pointList = generatePoints(numberOfCities,10)
+        solution = dfs(pointList)
         print(f"It took {solution.time} for {numberOfCities} points. Distance: {solution.distance} Solution: {solution.combination}\n")
         numberOfCities = numberOfCities + 1
     #we'll run all 4 algorithms
