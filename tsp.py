@@ -132,8 +132,30 @@ def tspGraph(listOfPoints):
 
     return graph
 
-def bfs():
-    return
+def bfs(listOfPoints):
+    startTime = time.time()
+    graph = tspGraph(listOfPoints)
+    visited = list()
+    dfsTraversal(visited, graph, listOfPoints[0])
+    endTime = time.time()
+    finalTime = f"{endTime - startTime}s"
+    distance = 0
+    for i, point in enumerate(visited):
+        if (i+1) in range(0, len(visited)):
+            distance += calculateDistanceBetweenPoints(point, visited[i+1])
+    return AlgorithmResult(finalTime, distance, printListOfPoints(visited))
+
+def bfsTraversal(visited, node, graph):
+    queue = []
+    visited.append(node)
+    queue.append(node)
+    while queue:
+        m = queue.pop(0)
+        for neighbor in graph[m]:
+            if neighbor not in visited:
+                visited.append(neighbor)
+                queue.append(neighbor)
+
 
 def generatePoints(numberOfPoints, maxCoordinateValue):
     pointList = list() #of type TSP
@@ -192,6 +214,13 @@ def runSimulation():
     while numberOfCities != 20: 
         pointList = generatePoints(numberOfCities,10)
         solution = dfs(pointList)
+        print(f"It took {solution.time} for {numberOfCities} points. Distance: {solution.distance} Solution: {solution.combination}\n")
+        numberOfCities = numberOfCities + 1
+
+    numberOfCities = 3
+    while numberOfCities != 1000: 
+        pointList = generatePoints(numberOfCities,10)
+        solution = bfs(pointList)
         print(f"It took {solution.time} for {numberOfCities} points. Distance: {solution.distance} Solution: {solution.combination}\n")
         numberOfCities = numberOfCities + 1
     #we'll run all 4 algorithms
