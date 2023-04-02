@@ -1,6 +1,7 @@
 import random
 from itertools import permutations
 import time
+import csv 
 #import matplotlib.pyplot as plt
 #import numpy as np
 
@@ -195,38 +196,33 @@ def runSimulation():
 
     #we'll want to have the same list of cities for these algorithms to run through in the final version
     #that way the data can be as accurately compared as possible
-    #but this is fine for verification
+    #but this is fine for verifications
 
-    numberOfCities = 3 
-    while numberOfCities != 10: 
-        pointList = generatePoints(numberOfCities,10)
-        solution = bruteForce(pointList)
-        print(f"It took {solution.time} for {numberOfCities} points. Distance: {solution.distance} Solution: {solution.combination}\n")
-        numberOfCities = numberOfCities + 1
+    csvDictionary = []
+    fields = ['Name Of Algorithm', 'Indicator of Algorithm', 'Number of Cities', 'Area in Units', 'Time in Seconds', 'Distance']
 
-
-    print('closestEdge')
-    #closest edge
-    numberOfCities = 3
-    while numberOfCities != 20: 
-        pointList = generatePoints(numberOfCities,10)
-        solution = closestEdge(pointList)
-        print(f"It took {solution.time} for {numberOfCities} points. Distance: {solution.distance} Solution: {solution.combination}\n")
-        numberOfCities = numberOfCities + 1
-
-    numberOfCities = 3
-    while numberOfCities != 20: 
-        pointList = generatePoints(numberOfCities,10)
-        solution = dfs(pointList)
-        print(f"It took {solution.time} for {numberOfCities} points. Distance: {solution.distance} Solution: {solution.combination}\n")
-        numberOfCities = numberOfCities + 1
-
-    numberOfCities = 3
-    while numberOfCities != 500: 
-        pointList = generatePoints(numberOfCities,100)
-        solution = bfs(pointList)
-        print(f"It took {solution.time} for {numberOfCities} points. Distance: {solution.distance} Solution: {solution.combination}\n")
-        numberOfCities = numberOfCities + 1
+    numberOfReplicates = 0
+    while numberOfReplicates != 3:
+        numberOfCities = 3 
+        while numberOfCities != 10:
+            area = 5  
+            while area != 11:
+                pointList = generatePoints(numberOfCities,area)
+                solution = bruteForce(pointList)
+                csvDictionary.append({'Name Of Algorithm': 'Brute Force', 'Indicator of Algorithm': 1, 'Number of Cities': numberOfCities, 'Area in Units': area * area, 'Time in Seconds': solution.time, 'Distance': solution.distance})
+                solution = closestEdge(pointList)
+                csvDictionary.append({'Name Of Algorithm': 'Closest Edge', 'Indicator of Algorithm': 2, 'Number of Cities': numberOfCities, 'Area in Units': area * area, 'Time in Seconds': solution.time, 'Distance': solution.distance})
+                solution = dfs(pointList)
+                csvDictionary.append({'Name Of Algorithm': 'Depth First Search', 'Indicator of Algorithm': 3, 'Number of Cities': numberOfCities, 'Area in Units': area * area, 'Time in Seconds': solution.time, 'Distance': solution.distance})
+                solution = bfs(pointList)
+                csvDictionary.append({'Name Of Algorithm': 'Breadth First Search', 'Indicator of Algorithm': 4, 'Number of Cities': numberOfCities, 'Area in Units': area * area, 'Time in Seconds': solution.time, 'Distance': solution.distance})
+                area = area + 1
+            numberOfCities = numberOfCities + 1
+        numberOfReplicates = numberOfReplicates + 1
+    with open('results.csv', 'w', newline='') as file: 
+        writer = csv.DictWriter(file, fieldnames = fields)
+        writer.writeheader() 
+        writer.writerows(csvDictionary)
     #we'll run all 4 algorithms
     #collect their data
     #run analysis
