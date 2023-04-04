@@ -2,6 +2,7 @@ import random
 from itertools import permutations
 import time
 import csv 
+import timeit
 #import matplotlib.pyplot as plt
 #import numpy as np
 
@@ -44,7 +45,7 @@ class AlgorithmResult:
 # 4. BFA
 
 def bruteForce(listOfPoints):
-    start_time = time.time()
+    startTime = timeit.default_timer()
     bestCombination = {}
     bestDistance = 0
     per = list(permutations(listOfPoints))
@@ -53,11 +54,12 @@ def bruteForce(listOfPoints):
         if (bestDistance == 0 or distance < bestDistance) :
             bestDistance = distance
             bestCombination = possibleSolution
-    bestTime = f"{time.time() - start_time}s"
-    return AlgorithmResult(bestTime, bestDistance, printListOfPoints(bestCombination)) 
+    endtime = timeit.default_timer()
+    finalTime = endtime - startTime
+    return AlgorithmResult(finalTime, bestDistance, printListOfPoints(bestCombination)) 
 
 def closestEdge(listOfPoints):
-    startTime = time.time()
+    startTime = timeit.default_timer()
     finalList = list() #TSP
     edgesList = list() #TSPEdge
 
@@ -84,29 +86,26 @@ def closestEdge(listOfPoints):
     for edge in edgesList:
         finalList.append(edge.p1)
     
-    endtime = time.time()
     distance = 0
     for i, point in enumerate(finalList):
         if (i+1) in range(0, len(finalList)):
             distance += calculateDistanceBetweenPoints(point, finalList[i+1])
     
-
-    finalTime = f"{endtime - startTime}s"
+    endtime = timeit.default_timer()
+    finalTime = endtime - startTime
     return AlgorithmResult(finalTime, distance, printListOfPoints(finalList))
 
 def dfs(listOfPoints):
-    startTime = time.time()
+    startTime = timeit.default_timer()
     graph = tspGraph(listOfPoints)
     visited = list()
     dfsTraversal(visited, graph, listOfPoints[0])
-    endTime = time.time()
-    finalTime = f"{endTime - startTime}s"
-
     distance = 0
     for i, point in enumerate(visited):
         if (i+1) in range(0, len(visited)):
             distance += calculateDistanceBetweenPoints(point, visited[i+1])
-
+    endTime = timeit.default_timer()
+    finalTime = endTime - startTime
     return AlgorithmResult(finalTime, distance, printListOfPoints(visited))
 
 def dfsTraversal(visited, graph, node):
@@ -136,17 +135,16 @@ def tspGraph(listOfPoints):
     return graph
 
 def bfs(listOfPoints):
-    startTime = time.time()
+    startTime = timeit.default_timer()
     graph = tspGraph(listOfPoints)
     visited = list()
     bfsTraversal(visited, graph, listOfPoints[0])
-    endTime = time.time()
-    finalTime = f"{endTime - startTime}s"
     distance = 0
     for i, point in enumerate(visited):
         if (i+1) in range(0, len(visited)):
             distance += calculateDistanceBetweenPoints(point, visited[i+1])
-    return AlgorithmResult(finalTime, distance, printListOfPoints(visited))
+    endTime = timeit.default_timer() - startTime
+    return AlgorithmResult(endTime, distance, printListOfPoints(visited))
 
 def bfsTraversal(visited, graph, node):
     queue = list()
@@ -203,13 +201,13 @@ def runSimulation():
 
     numberOfReplicates = 0
     while numberOfReplicates != 3:
-        numberOfCities = 3 
-        while numberOfCities != 10:
-            area = 5  
-            while area != 11:
+        numberOfCities = 95
+        while numberOfCities != 100:
+            area = 27
+            while area != 30:
                 pointList = generatePoints(numberOfCities,area)
-                solution = bruteForce(pointList)
-                csvDictionary.append({'Name Of Algorithm': 'Brute Force', 'Indicator of Algorithm': 1, 'Number of Cities': numberOfCities, 'Area in Units': area * area, 'Time in Seconds': solution.time, 'Distance': solution.distance})
+                # solution = bruteForce(pointList)
+                # csvDictionary.append({'Name Of Algorithm': 'Brute Force', 'Indicator of Algorithm': 1, 'Number of Cities': numberOfCities, 'Area in Units': area * area, 'Time in Seconds': solution.time, 'Distance': solution.distance})
                 solution = closestEdge(pointList)
                 csvDictionary.append({'Name Of Algorithm': 'Closest Edge', 'Indicator of Algorithm': 2, 'Number of Cities': numberOfCities, 'Area in Units': area * area, 'Time in Seconds': solution.time, 'Distance': solution.distance})
                 solution = dfs(pointList)
